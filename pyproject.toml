@@ -1,0 +1,27 @@
+[project]
+name = "nerf-light"
+version = "0.1.0"
+description = "Red light green light game with CV Nerf turret."
+authors = [
+	{name = "AfterNoon PM", email = "h2o.Drop2010@gmail.com"},
+	{name = "JaxFry", email = "jaxfry999@gmail.com"},
+	{name = "Fengyuan (Harry) Liu", email = "fengyuan6666@gmail.com"},
+]
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+	"ultralytics>=8.3.0",
+]
+
+[tool.poetry]
+packages = [
+	{ include = "nerf-light", from = "src" },
+]
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^8.4.1"
+flake8 = "^7.3.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
