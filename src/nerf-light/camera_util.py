@@ -4,7 +4,6 @@ import torch
 import numpy as np
 from typing import Dict, Set, Tuple, Optional, Any
 from dataclasses import dataclass
-from .weapon import WeaponController, PID, TurretController
 
 
 @dataclass
@@ -24,16 +23,6 @@ class MovementConfig:
 	"""Configuration settings for movement detection."""
 	movement_threshold: int = 10  # pixels
 	stillness_frame_limit: int = 5  # frames
-
-
-@dataclass
-class TrackingConfig:
-    """Configuration settings for weapon tracking."""
-    pid_kp: float = 0.1  # Proportional gain
-    pid_ki: float = 0.01 # Integral gain
-    pid_kd: float = 0.05 # Derivative gain
-    steps_per_pixel: float = 0.5 # Calibration factor
-    aim_tolerance: int = 10 # Pixels from center to be considered "aimed"
 
 
 class MovementDetector:
@@ -160,16 +149,15 @@ class ObjectTracker:
 		self.movement_detector = movement_detector
 		self.annotator = annotator
 	
-	def process_tracking_results(self, results, frame: np.ndarray) -> Tuple[Dict[int, Tuple[int, int]], Set[int], Optional[Tuple[int, int]]]:
+	def process_tracking_results(self, results, frame: np.ndarray) -> Tuple[Dict[int, Tuple[int, int]], Set[int]]:
 		"""
 		Process YOLO tracking results and annotate the frame.
 		
 		Returns:
-			Tuple of (current_centers, current_track_ids, primary_target_center)
+			Tuple of (current_centers, current_track_ids)
 		"""
 		current_centers = {}
 		current_track_ids = set()
-		primary_target_center = None
 		
 		for result in results:
 			boxes = result.boxes
@@ -178,9 +166,6 @@ class ObjectTracker:
 				
 			track_ids = boxes.id.int().cpu().tolist()
 			bounding_boxes = boxes.xyxy.cpu().numpy()
-			
-			# Find the primary target (lowest track_id that is moving)
-			primary_track_id = float('inf')
 			
 			for track_id, bbox in zip(track_ids, bounding_boxes):
 				current_track_ids.add(track_id)
@@ -192,13 +177,10 @@ class ObjectTracker:
 				
 				if is_moving:
 					self.annotator.annotate_moving_object(frame, track_id, x1, y1, x2, y2)
-					if track_id < primary_track_id:
-						primary_track_id = track_id
-						primary_target_center = (center_x, center_y)
-
+				
 				self._handle_tracked_object(track_id, x1, y1, x2, y2, is_moving)
 		
-		return current_centers, current_track_ids, primary_target_center
+		return current_centers, current_track_ids
 	
 	@staticmethod
 	def _calculate_center(x1: int, y1: int, x2: int, y2: int) -> Tuple[int, int]:
@@ -227,7 +209,6 @@ class Camera:
 		self.debug = debug
 		self.camera_config = CameraConfig()
 		self.movement_config = MovementConfig()
-		self.tracking_config = TrackingConfig()
 		
 		self.device = self._initialize_device()
 		self.model = self._load_model(model_path)
@@ -236,20 +217,6 @@ class Camera:
 		self.movement_detector = MovementDetector(self.movement_config)
 		self.annotator = FrameAnnotator()
 		self.object_tracker = ObjectTracker(self.movement_detector, self.annotator)
-		
-		# Initialize Weapon Systems
-		pid_setpoint = self.camera_config.frame_width / 2
-		self.pid_controller = PID(
-			self.tracking_config.pid_kp,
-			self.tracking_config.pid_ki,
-			self.tracking_config.pid_kd,
-			setpoint=pid_setpoint
-		)
-		self.weapon_controller = WeaponController(
-		    pid_controller=self.pid_controller,
-		    steps_per_pixel=self.tracking_config.steps_per_pixel,
-		    aim_tolerance=self.tracking_config.aim_tolerance
-		)
 	
 	def _initialize_device(self) -> str:
 		"""Initialize and return the appropriate device (GPU/CPU)."""
@@ -305,13 +272,8 @@ class Camera:
 			results = self._get_tracking_results(frame)
 			annotated_frame = frame.copy()
 			
-			current_centers, current_track_ids, primary_target_center = self.object_tracker.process_tracking_results(results, annotated_frame)
+			current_centers, current_track_ids = self.object_tracker.process_tracking_results(results, annotated_frame)
 			
-			if primary_target_center:
-				self._handle_aiming_and_firing(primary_target_center)
-			else:
-				self.weapon_controller.aim_at(None) # Stop motor if no target
-
 			self.movement_detector.cleanup_stale_tracks(current_track_ids)
 			self.movement_detector.update_centers(current_centers)
 			
@@ -320,21 +282,6 @@ class Camera:
 				if cv2.waitKey(1) & 0xFF == ord('q'):
 					break
 	
-	def _handle_aiming_and_firing(self, target_center: Tuple[int, int]) -> None:
-		"""Handles the logic for aiming and firing the weapon."""
-		target_x, _ = target_center
-		
-		# Update aim based on target's position
-		self.weapon_controller.aim_at(target_x)
-		
-		# Firing logic
-		if self.weapon_controller.is_aimed():
-			print(f"Target in range. Firing!")
-			self.weapon_controller.fire()
-		else:
-			error = self.weapon_controller.turret.last_error
-			print(f"Aiming... Error: {error:.2f}")
-
 	def _get_tracking_results(self, frame: np.ndarray) -> Any:
 		"""Get YOLO tracking results for the frame."""
 		return self.model.track(
@@ -350,6 +297,6 @@ class Camera:
 	def _cleanup_resources(self, cap: cv2.VideoCapture) -> None:
 		"""Clean up camera and display resources."""
 		print("Releasing resources.")
-		self.weapon_controller.cleanup()
 		cap.release()
 		cv2.destroyAllWindows()
+		
