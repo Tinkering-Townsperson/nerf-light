@@ -17,7 +17,7 @@ class StepperMotor:
 		else:
 			self.dir_pin.on()
 
-		for _ in range(steps):
+		for _ in range(abs(steps)):
 			self.step_pin.on()
 			time.sleep(delay)
 			self.step_pin.off()
