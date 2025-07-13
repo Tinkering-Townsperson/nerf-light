@@ -27,4 +27,4 @@ class Camera:
 
 	def parse_box(self, box):
 		x1, y1, x2, y2 = map(int, box.xyxy[0])
-		# return x1, y1, x2, y2
+		print(f"Person detected with confidence: {float(box.conf):.2f} at [{x1}, {y1}, {x2}, {y2}]")
