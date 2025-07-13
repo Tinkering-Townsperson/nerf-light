@@ -21,13 +21,10 @@ class Weapon:
 		self.stepper = StepperMotor(2, 3)
 		self.min_angle = min_angle
 		self.max_angle = max_angle
-		self.weapon_angle = 0  # Current angle of the weapon
 
 	def aim(self, angle: int):
 		"""Aim the Nerf turret."""
-		self.weapon_angle += angle
-		print(f"Aiming to {self.weapon_angle} degrees")
-		self.stepper.move_degrees(angle)
+		self.stepper.set_angle(angle)
 
 	def fire(self):
 		"""Fire the Nerf turret."""

@@ -8,6 +8,7 @@ class StepperMotor:
 		self.step_pin = OutputDevice(step_pin)
 		self.dir_pin.on()
 		self.step_angle: float = 1.8
+		self.weapon_angle = 0
 
 	def move_steps(self, steps: int, delay: float = 0.001):
 		"""Move the stepper motor a specified number of steps."""
@@ -25,5 +26,17 @@ class StepperMotor:
 
 	def move_degrees(self, degrees: float, delay: float = 0.001):
 		"""Move the stepper motor a specified number of degrees."""
-		steps = int(degrees / self.step_angle)
+		self.weapon_angle += degrees
+		steps = int(degrees // self.step_angle)
 		self.move_steps(steps, delay)
+
+	def set_angle(self, angle: float, delay: float = 0.001):
+		"""Move the stepper motor to a specified angle."""
+		angle %= 360
+
+		if angle < self.weapon_angle:
+			self.move_degrees(angle - self.weapon_angle, delay)
+		elif angle > self.weapon_angle:
+			self.move_degrees(angle - self.weapon_angle, delay)
+
+		return angle
