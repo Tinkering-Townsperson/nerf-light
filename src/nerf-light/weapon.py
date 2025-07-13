@@ -4,19 +4,20 @@
 
 from gpiozero import AngularServo
 from gpiozero.pins.pigpio import PiGPIOFactory
-from time import sleep
+from time import sleep  # noqa
 
 
 factory = PiGPIOFactory()
 
 trigger = AngularServo(
-    14,  # GPIO pin (change as needed)
-    min_angle=0,
-    max_angle=180,
-    min_pulse_width=0.5/1000,  # 0.5 ms
-    max_pulse_width=2.5/1000,  # 2.5 ms
-    pin_factory=factory
+	14,  # GPIO pin (change as needed)
+	min_angle=0,
+	max_angle=180,
+	min_pulse_width=0.5/1000,  # 0.5 ms
+	max_pulse_width=2.5/1000,  # 2.5 ms
+	pin_factory=factory
 )
 
+
 def fire():
-    
+	pass

@@ -4,8 +4,6 @@ from . import camera_util
 
 from os import getenv
 
-from ultralytics import YOLO
-
 
 def main() -> None:
 	model_path = getenv("MODEL_PATH", "yolo11n.pt")
@@ -14,5 +12,4 @@ def main() -> None:
 
 	camera_source = int(getenv("CAMERA_STREAM", "0"))
 	camera = camera_util.Camera(model_path=model_path, source=camera_source, debug=debug)
-	camera.mainloop()
 	camera.mainloop()
