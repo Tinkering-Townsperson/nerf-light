@@ -27,16 +27,15 @@ class StepperMotor:
 	def move_degrees(self, degrees: float, delay: float = 0.001):
 		"""Move the stepper motor a specified number of degrees."""
 		self.weapon_angle += degrees
+		self.weapon_angle %= 360
+
 		steps = int(degrees // self.step_angle)
 		self.move_steps(steps, delay)
 
 	def set_angle(self, angle: float, delay: float = 0.001):
 		"""Move the stepper motor to a specified angle."""
 		angle %= 360
+		diff = (angle - self.weapon_angle + 540) % 360 - 180
+		self.move_degrees(diff, delay)
 
-		if angle < self.weapon_angle:
-			self.move_degrees(-360 + angle - self.weapon_angle, delay)
-		elif angle > self.weapon_angle:
-			self.move_degrees(angle - self.weapon_angle, delay)
-
-		return angle
+		return self.weapon_angle
