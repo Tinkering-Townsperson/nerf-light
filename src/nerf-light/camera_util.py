@@ -8,7 +8,7 @@ class Camera:
 		self.debug: bool = debug
 
 	def mainloop(self):
-		results = self.model.predict(source=self.source, show=self.debug, conf=0.4, stream=True)
+		results = self.model.predict(source=self.source, show=self.debug, imgsz=320, conf=0.4, stream=True)
 
 		for r in results:
 			if r.boxes is None:

@@ -1993,6 +1993,12 @@
 			(embedded_fonts no)
 		)
 	)
+	(junction
+		(at 83.82 91.44)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "9fed948a-f789-4c9d-bf27-5dee73c60805")
+	)
 	(wire
 		(pts
 			(xy 232.41 68.58) (xy 232.41 73.66)
@@ -2015,13 +2021,13 @@
 	)
 	(wire
 		(pts
-			(xy 83.82 88.9) (xy 83.82 91.44)
+			(xy 81.28 88.9) (xy 81.28 91.44)
 		)
 		(stroke
 			(width 0)
 			(type default)
 		)
-		(uuid "2fce68c4-4796-4ed6-b945-53e2f4d13da4")
+		(uuid "4b2e1337-718d-4ae0-8acf-a3ca416d79b5")
 	)
 	(wire
 		(pts
@@ -2045,6 +2051,26 @@
 	)
 	(wire
 		(pts
+			(xy 81.28 91.44) (xy 83.82 91.44)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "cd8d03ef-24af-4114-81dc-493614dae592")
+	)
+	(wire
+		(pts
+			(xy 83.82 92.71) (xy 83.82 91.44)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "d8e22977-1497-4a5e-b54c-414c60ec64e5")
+	)
+	(wire
+		(pts
 			(xy 224.79 74.93) (xy 229.87 74.93)
 		)
 		(stroke
@@ -2052,6 +2078,16 @@
 			(type default)
 		)
 		(uuid "dd744b3a-6ff2-4062-a5eb-08de4bf21d5d")
+	)
+	(wire
+		(pts
+			(xy 81.28 88.9) (xy 83.82 88.9)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "ea2333c0-8405-4b4d-8805-f44538534aee")
 	)
 	(symbol
 		(lib_id "Driver_Motor:Pololu_Breakout_A4988")
