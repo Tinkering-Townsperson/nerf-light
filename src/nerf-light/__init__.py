@@ -1,7 +1,16 @@
-__version__ = "v0.0.1"
+__version__ = "v0.1.0"
 
-from . import camera
+from . import camera_util
+
+from os import getenv
+
+from ultralytics import YOLO
 
 
-def main():
+def main() -> None:
+	model_path = getenv("MODEL_PATH", "yolov8n.pt")
+	model = YOLO(model_path)
+
+	camera_source = int(getenv("CAMERA_STREAM", "0"))
+	camera = camera_util.Camera(model=model, source=camera_source)
 	camera.mainloop()
