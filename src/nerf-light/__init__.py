@@ -8,7 +8,7 @@ from ultralytics import YOLO
 
 
 def main() -> None:
-	model_path = getenv("MODEL_PATH", "yolov8n.pt")
+	model_path = getenv("MODEL_PATH", "yolov11n.pt")
 	model = YOLO(model_path)
 
 	debug = True if getenv("DEBUG") else False
