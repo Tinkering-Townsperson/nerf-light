@@ -1,20 +1,27 @@
-import RPi.GPIO as GPIO
+from gpiozero import OutputDevice
 import time
 
-DIR = 2    # GPIO pin 2
-STEP = 3   # GPIO pin 3
+DIR = OutputDevice(2)
+STEP = OutputDevice(3)
 
-GPIO.setmode(GPIO.BCM)
-GPIO.setup(DIR, GPIO.OUT)
-GPIO.setup(STEP, GPIO.OUT)
+try:
+    # Spin one way for 3 seconds
+    DIR.on()
+    start_time = time.time()
+    while time.time() - start_time < 3:
+        STEP.on()
+        time.sleep(0.001)
+        STEP.off()
+        time.sleep(0.001)
 
-GPIO.output(DIR, GPIO.HIGH)  # Set direction
-
-# Move 200 steps (1 rotation if 1.8° step angle)
-for _ in range(200):
-    GPIO.output(STEP, GPIO.HIGH)
-    time.sleep(0.001)  # Step pulse width
-    GPIO.output(STEP, GPIO.LOW)
-    time.sleep(0.001)
-
-GPIO.cleanup()
+    # Reverse direction for 3 seconds
+    DIR.off()
+    start_time = time.time()
+    while time.time() - start_time < 3:
+        STEP.on()
+        time.sleep(0.001)
+        STEP.off()
+        time.sleep(0.001)
+finally:
+    DIR.close()
+    STEP.close()
