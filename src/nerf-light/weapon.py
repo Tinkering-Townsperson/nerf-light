@@ -26,6 +26,7 @@ class Weapon:
 	def aim(self, angle: int):
 		"""Aim the Nerf turret."""
 		self.weapon_angle += angle
+		print(f"Aiming to {self.weapon_angle} degrees")
 		self.stepper.move_degrees(angle)
 
 	def fire(self):
