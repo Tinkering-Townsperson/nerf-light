@@ -6,7 +6,7 @@ from os import getenv
 
 
 def main() -> None:
-	debug = True if getenv("DEBUG") else False
+	debug = True if getenv("DEBUG") else True
 
 	camera_source = int(getenv("CAMERA_STREAM", "0"))
 	model_path = getenv("YOLO_MODEL_PATH", "yolo11n.pt")
