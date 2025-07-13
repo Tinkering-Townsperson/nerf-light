@@ -35,7 +35,7 @@ class StepperMotor:
 		angle %= 360
 
 		if angle < self.weapon_angle:
-			self.move_degrees(angle - self.weapon_angle, delay)
+			self.move_degrees(-360 + angle - self.weapon_angle, delay)
 		elif angle > self.weapon_angle:
 			self.move_degrees(angle - self.weapon_angle, delay)
 
