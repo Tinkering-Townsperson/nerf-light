@@ -11,6 +11,8 @@ def main() -> None:
 	model_path = getenv("MODEL_PATH", "yolov8n.pt")
 	model = YOLO(model_path)
 
+	debug = True if getenv("DEBUG") else False
+
 	camera_source = int(getenv("CAMERA_STREAM", "0"))
-	camera = camera_util.Camera(model=model, source=camera_source)
+	camera = camera_util.Camera(model=model, source=camera_source, debug=debug)
 	camera.mainloop()
