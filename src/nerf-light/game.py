@@ -35,11 +35,11 @@ class Game:
 		self.green_led = LED(Config.GREEN_LED_PIN)
 
 	def start(self):
-		camera_thread = Thread(target=self.camera.mainloop)
-		camera_thread.start()
+		self.camera_thread = Thread(target=self.camera.mainloop)
+		self.camera_thread.start()
 
-		game_thread = Thread(target=self.gameloop)
-		game_thread.start()
+		self.game_thread = Thread(target=self.gameloop)
+		self.game_thread.start()
 
 	def gameloop(self):
 		while self.state is GameState.PLAYING:
@@ -56,10 +56,20 @@ class Game:
 			sleep(10)
 			self.red_led.off()
 
+	def game_over(self):
+		self.PAUSED = True
+		self.camera_thread.join()
+		self.game_thread.join()
+
 		if self.state is GameState.WIN:
 			print("You win!")
 		elif self.state is GameState.LOSE:
 			print("You lose!")
+
+		self.red_led.off()
+		self.green_led.off()
+
+		exit(0)
 
 	def handle_movement(self, track_id: int, is_moving: bool):
 		"""Handle movement detection and aim the weapon."""
