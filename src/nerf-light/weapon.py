@@ -22,9 +22,11 @@ class Weapon:
 		self.min_angle = min_angle
 		self.max_angle = max_angle
 
-	def aim(self, angle: int):
+	def aim(self, angle: float):
 		"""Aim the Nerf turret."""
-		self.stepper.set_angle(angle)
+		# Clamp the angle to the allowed range
+		clamped_angle = max(self.min_angle, min(self.max_angle, angle))
+		self.stepper.set_angle(clamped_angle)
 
 	def fire(self):
 		"""Fire the Nerf turret."""

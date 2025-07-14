@@ -172,10 +172,11 @@ class AngleCalculator:
 class ObjectTracker:
 	"""Handles object tracking and processing."""
 
-	def __init__(self, movement_detector: MovementDetector, annotator: FrameAnnotator, camera_config: CameraConfig):
+	def __init__(self, movement_detector: MovementDetector, annotator: FrameAnnotator, camera_config: CameraConfig, weapon: Optional[Any] = None):
 		self.movement_detector = movement_detector
 		self.annotator = annotator
 		self.angle_calculator = AngleCalculator(camera_config)
+		self.weapon = weapon
 
 	def process_tracking_results(self, results, frame: np.ndarray) -> Tuple[Dict[int, Tuple[int, int]], Set[int]]:
 		"""
@@ -220,6 +221,8 @@ class ObjectTracker:
 		"""Handle custom logic for tracked objects."""
 		status = "Moving" if is_moving else "Still"
 		print(f"{status} person {track_id} detected at [{x1}, {y1}, {x2}, {y2}], angle: {angle:.2f} degrees")
+		if not is_moving and self.weapon:
+			self.weapon.aim(angle)
 
 
 class Camera:
@@ -227,7 +230,7 @@ class Camera:
 
 	PAUSED: bool = False
 
-	def __init__(self, model_path: str = 'yolo11n.pt', source: int = 0, debug: bool = False):
+	def __init__(self, model_path: str = 'yolo11n.pt', source: int = 0, debug: bool = False, weapon: Optional[Any] = None):
 		"""
 		Initialize the Camera with YOLO model and tracking components.
 
@@ -235,11 +238,13 @@ class Camera:
 			model_path: Path to the YOLO model file
 			source: Camera source index
 			debug: If True, displays the video feed with detections
+			weapon: An optional weapon object to control.
 		"""
 		self.source = source
 		self.debug = debug
 		self.camera_config = CameraConfig()
 		self.movement_config = MovementConfig()
+		self.weapon = weapon
 
 		self.device = self._initialize_device()
 		self.model = self._load_model(model_path)
@@ -247,7 +252,7 @@ class Camera:
 		# Initialize components following SRP
 		self.movement_detector = MovementDetector(self.movement_config)
 		self.annotator = FrameAnnotator()
-		self.object_tracker = ObjectTracker(self.movement_detector, self.annotator, self.camera_config)
+		self.object_tracker = ObjectTracker(self.movement_detector, self.annotator, self.camera_config, self.weapon)
 
 	def _initialize_device(self) -> str:
 		"""Initialize and return the appropriate device (GPU/CPU)."""
