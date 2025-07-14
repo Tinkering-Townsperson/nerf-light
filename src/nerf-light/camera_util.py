@@ -145,98 +145,17 @@ class FrameAnnotator:
 		)
 
 
-class AngleCalculator:
-	"""Calculates the angle of an object from the camera's center."""
-
-	def __init__(self, config: CameraConfig):
-		self.config = config
-
-	def calculate_angle(self, object_center_x: int) -> float:
-		"""
-		Calculate the horizontal angle of an object from the center of the camera's view.
-
-		Args:
-			object_center_x: The horizontal center of the detected object in pixels.
-
-		Returns:
-			The angle in degrees. Positive values are to the right of center,
-			negative values are to the left.
-		"""
-		frame_center_x = self.config.frame_width / 2
-		pixel_offset = object_center_x - frame_center_x
-		angle_per_pixel = self.config.horizontal_fov / self.config.frame_width
-		angle = pixel_offset * angle_per_pixel
-		return angle
-
-
-class ObjectTracker:
-	"""Handles object tracking and processing."""
-
-	def __init__(
-		self,
-		movement_detector: MovementDetector,
-		annotator: FrameAnnotator,
-		camera_config: CameraConfig,
-		weapon: Optional[Any] = None
-	):
-		self.movement_detector = movement_detector
-		self.annotator = annotator
-		self.angle_calculator = AngleCalculator(camera_config)
-		self.weapon = weapon
-
-	def process_tracking_results(self, results, frame: np.ndarray) -> Tuple[Dict[int, Tuple[int, int]], Set[int]]:
-		"""
-		Process YOLO tracking results and annotate the frame.
-
-		Returns:
-			Tuple of (current_centers, current_track_ids)
-		"""
-		current_centers = {}
-		current_track_ids = set()
-
-		for result in results:
-			boxes = result.boxes
-			if boxes is None or boxes.id is None:
-				continue
-
-			track_ids = boxes.id.int().cpu().tolist()
-			bounding_boxes = boxes.xyxy.cpu().numpy()
-
-			for track_id, bbox in zip(track_ids, bounding_boxes):
-				current_track_ids.add(track_id)
-				x1, y1, x2, y2 = map(int, bbox)
-				center_x, center_y = self._calculate_center(x1, y1, x2, y2)
-				current_centers[track_id] = (center_x, center_y)
-
-				is_moving = self.movement_detector.is_object_moving(track_id, center_x, center_y)
-				angle = self.angle_calculator.calculate_angle(center_x)
-
-				if is_moving:
-					self.annotator.annotate_moving_object(frame, track_id, x1, y1, x2, y2)
-
-				self._handle_tracked_object(track_id, x1, y1, x2, y2, is_moving, angle)
-
-		return current_centers, current_track_ids
-
-	@staticmethod
-	def _calculate_center(x1: int, y1: int, x2: int, y2: int) -> Tuple[int, int]:
-		"""Calculate the center point of a bounding box."""
-		return (x1 + x2) // 2, (y1 + y2) // 2
-
-	def _handle_tracked_object(self, track_id: int, x1: int, y1: int, x2: int, y2: int, is_moving: bool, angle: float) -> None:
-		"""Handle custom logic for tracked objects."""
-		status = "Moving" if is_moving else "Still"
-		print(f"{status} person {track_id} detected at [{x1}, {y1}, {x2}, {y2}], angle: {angle:.2f} degrees")
-		if self.weapon:
-			self.weapon.aim(angle)
-
-
 class Camera:
 	"""Main camera class for object detection and tracking."""
 
-	PAUSED: bool = False
-
-	def __init__(self, model_path: str = 'yolo11n.pt', source: int = 0, debug: bool = False, weapon: Optional[Any] = None):
+	def __init__(
+		self,
+		handler: callable,
+		model_path: str = 'yolo11n.pt',
+		source: int = 0,
+		debug: bool = False,
+		weapon: Optional[Any] = None,
+	):
 		"""
 		Initialize the Camera with YOLO model and tracking components.
 
@@ -251,6 +170,7 @@ class Camera:
 		self.camera_config = CameraConfig()
 		self.movement_config = MovementConfig()
 		self.weapon = weapon
+		self.handler = handler
 
 		self.device = self._initialize_device()
 		self.model = self._load_model(model_path)
@@ -258,7 +178,6 @@ class Camera:
 		# Initialize components following SRP
 		self.movement_detector = MovementDetector(self.movement_config)
 		self.annotator = FrameAnnotator()
-		self.object_tracker = ObjectTracker(self.movement_detector, self.annotator, self.camera_config, self.weapon)
 
 	def _initialize_device(self) -> str:
 		"""Initialize and return the appropriate device (GPU/CPU)."""
@@ -276,9 +195,6 @@ class Camera:
 		"""Main loop for capturing and processing video frames."""
 		cap = self._initialize_camera()
 		if cap is None:
-			return
-
-		if self.PAUSED:
 			return
 
 		try:
@@ -316,7 +232,26 @@ class Camera:
 			results = self._get_tracking_results(frame)
 			annotated_frame = frame.copy()
 
-			current_centers, current_track_ids = self.object_tracker.process_tracking_results(results, annotated_frame)
+			current_centers = {}
+			current_track_ids = set()
+
+			for result in results:
+				boxes = result.boxes
+				ids = getattr(boxes, 'id', None)
+				if ids is None:
+					continue
+				for i, track_id_tensor in enumerate(ids):
+					track_id = int(track_id_tensor.item())
+					x1, y1, x2, y2 = map(int, boxes.xyxy[i].tolist())
+					center_x = (x1 + x2) // 2
+					center_y = (y1 + y2) // 2
+					current_centers[track_id] = (center_x, center_y)
+					current_track_ids.add(track_id)
+
+					is_moving = self.movement_detector.is_object_moving(track_id, center_x, center_y)
+					if is_moving:
+						self.handler(track_id=track_id, is_moving=is_moving, angle=0)  # Example angle, adjust as needed
+						self.annotator.annotate_moving_object(annotated_frame, track_id, x1, y1, x2, y2)
 
 			self.movement_detector.cleanup_stale_tracks(current_track_ids)
 			self.movement_detector.update_centers(current_centers)

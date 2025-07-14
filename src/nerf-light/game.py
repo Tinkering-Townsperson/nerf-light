@@ -1,0 +1,67 @@
+from . import Config
+# from .camera_util import Camera
+from .weapon import Weapon
+
+from gpiozero import LED
+
+from threading import Thread
+from random import randint
+from time import sleep
+from enum import Enum
+
+
+class GameState(Enum):
+	PLAYING = 0
+	WIN = 1
+	LOSE = 2
+
+
+class Game:
+	def __init__(self):
+		self.PAUSED = True
+		self.state = GameState.PLAYING
+
+		self.weapon: Weapon = Weapon(min_angle=0, max_angle=45, pin=Config.SERVO_PIN)
+
+		# self.camera: Camera = Camera(
+		# 	model_path=Config.MODEL_PATH,
+		# 	source=Config.CAMERA_SOURCE,
+		# 	debug=Config.DEBUG,
+		# 	weapon=self.weapon,
+		# 	handler=self.handle_movement
+		# )
+
+		self.red_led = LED(Config.RED_LED_PIN)
+		self.green_led = LED(Config.GREEN_LED_PIN)
+
+	def start(self):
+		# camera_thread = Thread(target=self.camera.mainloop)
+		# camera_thread.start()
+
+		game_thread = Thread(target=self.gameloop)
+		game_thread.start()
+
+	def gameloop(self):
+		while self.state is GameState.PLAYING:
+			print("green light")
+			self.green_led.on()
+			self.PAUSED = True
+			sleep(randint(15, 45))
+			self.green_led.off()
+			# RED LIGHT
+			sleep(1)
+			print("red light")
+			self.red_led.on()
+			self.PAUSED = False
+			sleep(10)
+			self.red_led.off()
+
+	def handle_movement(self, track_id: int, is_moving: bool):
+		"""Handle movement detection and aim the weapon."""
+		if self.PAUSED:
+			return
+
+		if is_moving:
+			print(f"Object #{track_id} was caught lacking!")
+			self.weapon.fire()
+			self.state = GameState.LOSE
