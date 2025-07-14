@@ -20,12 +20,14 @@ class Game:
 	def __init__(self):
 		self.PAUSED = True
 		self.state = GameState.PLAYING
+		self.running = True  # Add a flag to control thread loops
 
 		self.weapon: Weapon = Weapon(min_angle=0, max_angle=40, pin=Config.SERVO_PIN)
 
 		self.camera: Camera = Camera(
 			model_path=Config.MODEL_PATH,
 			source=Config.CAMERA_SOURCE,
+			someobj=self,
 			debug=Config.DEBUG,
 			weapon=self.weapon,
 			handler=self.handle_movement
@@ -44,7 +46,7 @@ class Game:
 		self.game_thread.start()
 
 	def gameloop(self):
-		while self.state is GameState.PLAYING:
+		while self.state is GameState.PLAYING and self.running:
 			print("green light")
 			self.green_led.on()
 			self.PAUSED = True
@@ -60,8 +62,11 @@ class Game:
 
 	def game_over(self, state: GameState):
 		self.PAUSED = True
-		self.camera_thread.join()
-		self.game_thread.join()
+		self.running = False  # Signal threads to stop
+
+		# Do NOT join threads here to avoid joining current thread
+
+		self.state = state  # Set the state to WIN or LOSE
 
 		if self.state is GameState.WIN:
 			print("You win!")

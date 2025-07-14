@@ -151,6 +151,7 @@ class Camera:
 	def __init__(
 		self,
 		handler: callable,
+		someobj: object,
 		model_path: str = 'yolo11n.pt',
 		source: int = 0,
 		debug: bool = False,
@@ -171,6 +172,7 @@ class Camera:
 		self.movement_config = MovementConfig()
 		self.weapon = weapon
 		self.handler = handler
+		self.someobj = someobj
 
 		self.device = self._initialize_device()
 		self.model = self._load_model(model_path)
@@ -223,7 +225,7 @@ class Camera:
 
 	def _process_video_stream(self, cap: cv2.VideoCapture) -> None:
 		"""Process the video stream frame by frame."""
-		while True:
+		while True and self.someobj.running:
 			ret, frame = cap.read()
 			if not ret:
 				print("Failed to grab frame, ending loop.")
