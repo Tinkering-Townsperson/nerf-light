@@ -10,8 +10,8 @@ class Config(object):
 	CAMERA_SOURCE: int = int(getenv("CAMERA_STREAM", "0"))
 	MODEL_PATH: str = getenv("YOLO_MODEL_PATH", "yolo11n.pt")
 	SERVO_PIN: int = int(getenv("SERVO_PIN", "14"))
-	RED_LED_PIN: int = int(getenv("RED_LED_PIN", "23"))
-	GREEN_LED_PIN: int = int(getenv("GREEN_LED_PIN", "24"))
+	RED_LED_PIN: int = int(getenv("RED_LED_PIN", "24"))
+	GREEN_LED_PIN: int = int(getenv("GREEN_LED_PIN", "23"))
 
 
 def main():
