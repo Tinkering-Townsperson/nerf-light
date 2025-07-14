@@ -3,7 +3,7 @@ from random import randint
 from threading import Thread
 from time import sleep
 
-from gpiozero import LED
+from gpiozero import LED, Button
 
 from . import Config
 from .camera_util import Camera
@@ -21,7 +21,7 @@ class Game:
 		self.PAUSED = True
 		self.state = GameState.PLAYING
 
-		self.weapon: Weapon = Weapon(min_angle=0, max_angle=45, pin=Config.SERVO_PIN)
+		self.weapon: Weapon = Weapon(min_angle=0, max_angle=40, pin=Config.SERVO_PIN)
 
 		self.camera: Camera = Camera(
 			model_path=Config.MODEL_PATH,
@@ -30,6 +30,8 @@ class Game:
 			weapon=self.weapon,
 			handler=self.handle_movement
 		)
+
+		self.big_button = Button(Config.BUTTON_PIN, hold_time=1, pull_up=True)
 
 		self.red_led = LED(Config.RED_LED_PIN)
 		self.green_led = LED(Config.GREEN_LED_PIN)
@@ -56,7 +58,7 @@ class Game:
 			sleep(5)
 			self.red_led.off()
 
-	def game_over(self):
+	def game_over(self, state: GameState):
 		self.PAUSED = True
 		self.camera_thread.join()
 		self.game_thread.join()
@@ -79,4 +81,4 @@ class Game:
 		if is_moving:
 			print(f"Object #{track_id} was caught lacking!")
 			self.weapon.fire()
-			self.state = GameState.LOSE
+			self.game_over(GameState.LOSE)
