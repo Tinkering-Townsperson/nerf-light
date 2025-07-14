@@ -33,7 +33,7 @@ class Game:
 			handler=self.handle_movement
 		)
 
-		self.big_button = Button(Config.BUTTON_PIN, hold_time=1, pull_up=True)
+		self.big_button = Button(Config.BUTTON_PIN, hold_time=1, pull_up=True, )
 
 		self.red_led = LED(Config.RED_LED_PIN)
 		self.green_led = LED(Config.GREEN_LED_PIN)
@@ -59,6 +59,11 @@ class Game:
 			self.PAUSED = False
 			sleep(5)
 			self.red_led.off()
+
+			if self.big_button.is_pressed:
+				print("Button pressed, ending game.")
+				self.game_over(GameState.WIN)
+				return
 
 	def game_over(self, state: GameState):
 		self.PAUSED = True

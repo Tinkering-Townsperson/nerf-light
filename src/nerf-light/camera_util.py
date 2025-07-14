@@ -225,7 +225,7 @@ class Camera:
 
 	def _process_video_stream(self, cap: cv2.VideoCapture) -> None:
 		"""Process the video stream frame by frame."""
-		while True and self.someobj.running:
+		while self.someobj.running:
 			ret, frame = cap.read()
 			if not ret:
 				print("Failed to grab frame, ending loop.")
