@@ -12,6 +12,7 @@ class Config(object):
 	SERVO_PIN: int = int(getenv("SERVO_PIN", "14"))
 	RED_LED_PIN: int = int(getenv("RED_LED_PIN", "24"))
 	GREEN_LED_PIN: int = int(getenv("GREEN_LED_PIN", "23"))
+	BUTTON_PIN: int = int(getenv("BUTTON_PIN", "25"))
 
 
 def main():
