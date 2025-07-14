@@ -250,7 +250,7 @@ class Camera:
 
 					is_moving = self.movement_detector.is_object_moving(track_id, center_x, center_y)
 					if is_moving:
-						self.handler(track_id=track_id, is_moving=is_moving, angle=0)  # Example angle, adjust as needed
+						self.handler(track_id=track_id, is_moving=is_moving)  # Example angle, adjust as needed
 						self.annotator.annotate_moving_object(annotated_frame, track_id, x1, y1, x2, y2)
 
 			self.movement_detector.cleanup_stale_tracks(current_track_ids)
