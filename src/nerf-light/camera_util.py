@@ -172,7 +172,13 @@ class AngleCalculator:
 class ObjectTracker:
 	"""Handles object tracking and processing."""
 
-	def __init__(self, movement_detector: MovementDetector, annotator: FrameAnnotator, camera_config: CameraConfig, weapon: Optional[Any] = None):
+	def __init__(
+		self,
+		movement_detector: MovementDetector,
+		annotator: FrameAnnotator,
+		camera_config: CameraConfig,
+		weapon: Optional[Any] = None
+	):
 		self.movement_detector = movement_detector
 		self.annotator = annotator
 		self.angle_calculator = AngleCalculator(camera_config)
@@ -221,7 +227,7 @@ class ObjectTracker:
 		"""Handle custom logic for tracked objects."""
 		status = "Moving" if is_moving else "Still"
 		print(f"{status} person {track_id} detected at [{x1}, {y1}, {x2}, {y2}], angle: {angle:.2f} degrees")
-		if not is_moving and self.weapon:
+		if self.weapon:
 			self.weapon.aim(angle)
 
 
