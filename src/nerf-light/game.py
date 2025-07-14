@@ -88,6 +88,8 @@ class Game:
 		if self.PAUSED or self.state is not GameState.PLAYING:
 			return
 
+		print(f"Object {track_id} found i think perchance")
+
 		if is_moving:
 			print(f"Object #{track_id} was caught lacking!")
 			self.weapon.fire()
