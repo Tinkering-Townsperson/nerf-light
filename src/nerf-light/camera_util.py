@@ -16,6 +16,7 @@ class CameraConfig:
 	yolo_image_size: int = 320
 	confidence_threshold: float = 0.5
 	person_class_id: int = 0
+	horizontal_fov: float = 60.0  # degrees
 
 
 @dataclass
@@ -144,12 +145,37 @@ class FrameAnnotator:
 		)
 
 
+class AngleCalculator:
+	"""Calculates the angle of an object from the camera's center."""
+
+	def __init__(self, config: CameraConfig):
+		self.config = config
+
+	def calculate_angle(self, object_center_x: int) -> float:
+		"""
+		Calculate the horizontal angle of an object from the center of the camera's view.
+
+		Args:
+			object_center_x: The horizontal center of the detected object in pixels.
+
+		Returns:
+			The angle in degrees. Positive values are to the right of center,
+			negative values are to the left.
+		"""
+		frame_center_x = self.config.frame_width / 2
+		pixel_offset = object_center_x - frame_center_x
+		angle_per_pixel = self.config.horizontal_fov / self.config.frame_width
+		angle = pixel_offset * angle_per_pixel
+		return angle
+
+
 class ObjectTracker:
 	"""Handles object tracking and processing."""
 
-	def __init__(self, movement_detector: MovementDetector, annotator: FrameAnnotator):
+	def __init__(self, movement_detector: MovementDetector, annotator: FrameAnnotator, camera_config: CameraConfig):
 		self.movement_detector = movement_detector
 		self.annotator = annotator
+		self.angle_calculator = AngleCalculator(camera_config)
 
 	def process_tracking_results(self, results, frame: np.ndarray) -> Tuple[Dict[int, Tuple[int, int]], Set[int]]:
 		"""
@@ -176,11 +202,12 @@ class ObjectTracker:
 				current_centers[track_id] = (center_x, center_y)
 
 				is_moving = self.movement_detector.is_object_moving(track_id, center_x, center_y)
+				angle = self.angle_calculator.calculate_angle(center_x)
 
 				if is_moving:
 					self.annotator.annotate_moving_object(frame, track_id, x1, y1, x2, y2)
 
-				self._handle_tracked_object(track_id, x1, y1, x2, y2, is_moving)
+				self._handle_tracked_object(track_id, x1, y1, x2, y2, is_moving, angle)
 
 		return current_centers, current_track_ids
 
@@ -189,10 +216,10 @@ class ObjectTracker:
 		"""Calculate the center point of a bounding box."""
 		return (x1 + x2) // 2, (y1 + y2) // 2
 
-	def _handle_tracked_object(self, track_id: int, x1: int, y1: int, x2: int, y2: int, is_moving: bool) -> None:
+	def _handle_tracked_object(self, track_id: int, x1: int, y1: int, x2: int, y2: int, is_moving: bool, angle: float) -> None:
 		"""Handle custom logic for tracked objects."""
 		status = "Moving" if is_moving else "Still"
-		print(f"{status} person {track_id} detected at [{x1}, {y1}, {x2}, {y2}]")
+		print(f"{status} person {track_id} detected at [{x1}, {y1}, {x2}, {y2}], angle: {angle:.2f} degrees")
 
 
 class Camera:
@@ -220,7 +247,7 @@ class Camera:
 		# Initialize components following SRP
 		self.movement_detector = MovementDetector(self.movement_config)
 		self.annotator = FrameAnnotator()
-		self.object_tracker = ObjectTracker(self.movement_detector, self.annotator)
+		self.object_tracker = ObjectTracker(self.movement_detector, self.annotator, self.camera_config)
 
 	def _initialize_device(self) -> str:
 		"""Initialize and return the appropriate device (GPU/CPU)."""
