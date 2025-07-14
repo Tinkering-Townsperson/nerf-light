@@ -46,14 +46,14 @@ class Game:
 			print("green light")
 			self.green_led.on()
 			self.PAUSED = True
-			sleep(randint(15, 45))
+			sleep(randint(5, 10))
 			self.green_led.off()
 			# RED LIGHT
 			sleep(1)
 			print("red light")
 			self.red_led.on()
 			self.PAUSED = False
-			sleep(10)
+			sleep(5)
 			self.red_led.off()
 
 	def game_over(self):
@@ -73,7 +73,7 @@ class Game:
 
 	def handle_movement(self, track_id: int, is_moving: bool):
 		"""Handle movement detection and aim the weapon."""
-		if self.PAUSED:
+		if self.PAUSED or self.state is not GameState.PLAYING:
 			return
 
 		if is_moving:
