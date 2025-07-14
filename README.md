@@ -17,7 +17,3 @@ The camera tracks people and detects movements, the RPI generates an angle for a
 
 We built this for Highway, so we decided to build something very cool, something that people will like. With the recent Squid Game 3 releasing, I'm certain that this little invention will become very popular...
 
-**How to build**
-
-PAYA YOU DO IT IDK HOW YOU WIRE IT UP
-
