@@ -1,6 +1,6 @@
 # Nerf Light
 
-Red light green light game with CV Nerf turret.
+Linear Red light green light game with CV Nerf turret.
 
 
 **What this is**
@@ -11,7 +11,16 @@ If not, that's okay. "Red light green light" is a game where one person decides 
 
 The TV show "Squid Game" introduces a verry deadly twist to this game: people now get shot to death if they fail in the game. This is exactly what we're trying to create. 
 
-The camera tracks people and detects movements, the RPI generates an angle for a stepper motor to turn towards, and the stepper motor turns the gun. When the gun's in position, a beefy servo motor attached to the trigger will fire the (Nerf) gun (and kill the person :-[)
+The camera tracks people and detects movements. If a person is detected moving during red light, a beefy servo motor attached to the trigger will turn fire the (Nerf) gun (and kill the person :-[)
+
+We encountered a technical difficulty because apparently the most powerful motor is not powerful enough to move the gun... we pivoted from the original idea to make a linear red light green light. So how is it different from the original red light green light?
+
+1. No to (disgusting) friends
+   It cannot work with your friends. Why do you have friends anyway? What are you doing? Socialising?! Impossible!!!111!!!
+2. It's in a line.
+   Since the gun no longer moves, you have to move towards the gun while following a straight line. Discipline yourself!!!1111!!!!
+
+When the players reach the gun, they can press a button to end and win the game.
 
 **Why we built this**
 
