@@ -26,4 +26,16 @@ When the players reach the gun, they can press a button to end and win the game.
 
 We built this for Undercity, so we decided to build something very cool, something that people will like. With the recent Squid Game 3 releasing, I'm certain that this little invention will become very popular...
 
+## BOM
 
+| Part name | Quantity |
+| --- | --- |
+| Raspberry 3B+ (or any Pi) | 1 |
+| Red LED (generic) | 1 |
+| Green LED (generic) | 1 |
+| Electric Nerf gun (any) | 1 |
+| Beefy servo motor (MG996R) | 1 |
+| Stepper motor | 1 |
+| Stepper driver board | 1 |
+| Large button | 1 |
+| USB Web Camera | 1 |
