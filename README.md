@@ -4,8 +4,8 @@ Linear Red light green light game with CV Nerf turret.
 
 ## Demo videos (Click to open video on youtube.com)
 
-[![JaxFry's video - thumbnail](https://img.youtube.com/vi/CFjpSm7S8ds/0.jpg)](https://www.youtube.com/watch?v=CFjpSm7S8ds)
-[![Feng's video - thumbnail](https://img.youtube.com/vi/M8pHXFLeqDg/0.jpg)](https://www.youtube.com/watch?v=M8pHXFLeqDg)
+[![JaxFry's video - thumbnail](https://img.youtube.com/vi/CFjpSm7S8ds/0.jpg)](https://www.youtube.com/watch?feature=player_embedded&v=CFjpSm7S8ds)
+[![Feng's video - thumbnail](https://img.youtube.com/vi/M8pHXFLeqDg/0.jpg)](https://www.youtube.com/watch?feature=player_embedded&v=M8pHXFLeqDg)
 
 ## What this is
 
@@ -30,6 +30,13 @@ When the players reach the gun, they can press a button to end and win the game.
 
 We built this for Undercity, so we decided to build something very cool, something that people will like. With the recent Squid Game 3 releasing, I'm certain that this little invention will become very popular...
 
+## Photo gallery
+
+![Fully assembled project](./assets/assembled-1.jpg)
+![Fully assembled, green light](./assets/assembled-2.png)
+![Stepper driver board and pi](./assets/stepper-board-with-pi.jpg)
+![Trying to get the stepper driver to work](./assets/stepper.jpg)
+
 ## BOM
 
 | Part name | Quantity |
@@ -39,7 +46,7 @@ We built this for Undercity, so we decided to build something very cool, somethi
 | Green LED (generic) | 1 |
 | Electric Nerf gun (any) | 1 |
 | Beefy servo motor (MG996R) | 1 |
-| Stepper motor | 1 |
-| Stepper driver board | 1 |
+| Stepper motor (ended up not using) | 1 |
+| Stepper driver board (ended up not using) | 1 |
 | Large button | 1 |
 | USB Web Camera | 1 |
