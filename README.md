@@ -2,6 +2,10 @@
 
 Linear Red light green light game with CV Nerf turret.
 
+## Demo videos (Click to open video on youtube.com)
+
+[![JaxFry's video - thumbnail](https://img.youtube.com/vi/CFjpSm7S8ds/0.jpg)](https://www.youtube.com/watch?v=CFjpSm7S8ds)
+[![Feng's video - thumbnail](https://img.youtube.com/vi/M8pHXFLeqDg/0.jpg)](https://www.youtube.com/watch?v=M8pHXFLeqDg)
 
 ## What this is
 
