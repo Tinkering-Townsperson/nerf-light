@@ -37,6 +37,10 @@ We built this for Undercity, so we decided to build something very cool, somethi
 ![Stepper driver board and pi](./assets/stepper-board-with-pi.jpg)
 ![Trying to get the stepper driver to work](./assets/stepper.jpg)
 
+## Wiring Diagram
+![Wiring Diagram](./assets/wiring-diagram.png)
+Keep in mind you also need to plug a USB webcam into a USB port on the pi.
+
 ## BOM
 
 | Part name | Quantity |
