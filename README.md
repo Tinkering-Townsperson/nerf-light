@@ -44,6 +44,7 @@ We built this for Undercity, so we decided to build something very cool, somethi
 | Raspberry 3B+ (or any Pi) | 1 |
 | Red LED (generic) | 1 |
 | Green LED (generic) | 1 |
+| 400Ω Resistor | 2 |
 | Electric Nerf gun (any) | 1 |
 | Beefy servo motor (MG996R) | 1 |
 | Stepper motor (ended up not using) | 1 |
